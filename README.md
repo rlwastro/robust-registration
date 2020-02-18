@@ -12,9 +12,9 @@ The Jupyter notebook demonstrates using the robust registration algorithm to cro
 
 ### References
 
-[Tian, F. Budavári, T. Basu, A. Lubow, S.H. & White, R.L. (2019) Robust Registration of Astronomy Catalogs with Applications to the Hubble Space Telescope. _The Astronomical Journal_ 158, 191. doi:10.3847/1538-3881/ab3f38](https://ui.adsabs.harvard.edu/abs/2019AJ....158..191T).
+[Tian, F., Budavári, T., Basu, A., Lubow, S.H., & White, R.L. (2019) Robust Registration of Astronomy Catalogs with Applications to the Hubble Space Telescope. _The Astronomical Journal_ 158, 191. doi:10.3847/1538-3881/ab3f38](https://ui.adsabs.harvard.edu/abs/2019AJ....158..191T).
 
-[Budavári, T. & Lubow, S.H. (2012).  Catalog Matching with Astrometric Correction and its Application to the Hubble Legacy Archive. _The Astrophysical Journal_ 761, 188. doi:10.1088/0004-637X/761/2/188](https://ui.adsabs.harvard.edu/abs/2012ApJ...761..188B)
+[Budavári, T., & Lubow, S.H. (2012) Catalog Matching with Astrometric Correction and its Application to the Hubble Legacy Archive. _The Astrophysical Journal_ 761, 188. doi:10.1088/0004-637X/761/2/188](https://ui.adsabs.harvard.edu/abs/2012ApJ...761..188B)
 
 | Module                         | Description |
 | ------------------------------ | ----------- |
