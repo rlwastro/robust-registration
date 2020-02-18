@@ -238,7 +238,7 @@ def vdyadicp(a, b):
         raise ValueError('a,b must have same shape [...,3]')
     return np.einsum('...i,...j->...ij', a, b)
 
-def rob_est2(r, c, sigma, gamma, area, omega=None, w=None, sigma_init=None, niter=10, nextr=100, printerror=False, verbose=False):
+def rob_est(r, c, sigma, gamma, area, omega=None, w=None, sigma_init=None, niter=10, nextr=100, printerror=False, verbose=False):
     """
     Iterative estimation with intial sigma convergence of 'niter' iterations, followed by
     'nextr' steps of convergence with a fixed sigma value. The maximum number of iterations is niter+nextr.
@@ -326,95 +326,13 @@ def rob_est2(r, c, sigma, gamma, area, omega=None, w=None, sigma_init=None, nite
                 break
     return omega, w
 
-def rob_est(r, c, sigma, gamma, area, sigma_init=None, niter=10, nextr=100, printerror=False, verbose=False):
-    """
-    Iterative estimation with intial sigma convergence of 'niter' iterations, followed by
-    'nextr' steps of convergence with a fixed sigma value. The maximum number of iterations is niter+nextr.
-    
-    :param r:            Input catalog coordinates in pairs to be corrected, (x,y,z) vectors.
-    :param c:            Reference catalog coordinates in pairs, (x,y,z) vectors. 
-    :param sigma:        True value of sigma, the astrometric uncertainty of the catalog.
-    :param gamma:        Fraction of good matches among all pairs.
-    :param area:         Area of the footprint, units in steradians.
-    :param sigma_init:   Assign a large initial value for sigma. If None, will use 25*sigma.
-    :param niter:        Min number of iterations for the convergence.
-    :param nextr:        Max number of additional iterations for the convergence.
-    :param printerror:   Boolean value, if true then print error messages for ring failures.
-    :param verbose:      Boolean value, if true prints info about progress
-    :type r:             numpy.ndarray
-    :type c:             numpy.ndarray
-    :type sigma:         float
-    :type gamma:         float
-    :type area:          float
-    :type sigma_init:    None or float
-    :type niter:         int 
-    :type nextr:         int 
-    :type printerror:    bool
-    :type verbose:       bool
-    :returns:            (omega, w) omega: 3D transformation vector estimated by robust algorithm
-                         w: weights of the last iteration.
-    """
-    sigma_init = sigma_init or 25 * sigma
-    
-    # Specify an array of sigma values to use for
-    # sigma convergence from initial to final values.
-    sigma_array = sigma_init*(sigma/sigma_init)**(np.arange(niter, dtype=float)/(niter-1))
-    if verbose:
-        print(f"sigma init {sigma_init} final {sigma} gamma {gamma} niter {niter} nextr {nextr}")
-    
-    # use w=1 if too few pairs
-    n = r.shape[0]
-    if n < 3:
-        if printerror:
-            print(f"Skipping the weighting with {n} pairs")
-        # estimate with weights of all ones
-        omega = solveRC(r, c, sigma=sigma, w=None)
-        w = np.ones(r.shape[0])
-    
-    else:
-        # Nominal value for gamma to avoid problem
-        if gamma > 0.9:
-            gamma = 0.9
-        
-        # Initially, assume all pairs are "good", 
-        # estimate omega using the least-squares method
-        omega = solveRC(r, c, sigma=sigma, w=None)
-
-        # Loop over a number of iterations
-        for it in range(niter+nextr):
-
-            i = min(it,sigma_array.size-1)
-
-            # assign omega_t+1=omega_t
-            omega_last = omega # ref
-
-            # Estimate weights
-            w = computeWeights(r, c, omega, sigma=sigma_array[i], gamma=gamma, area=area)
-
-            # Estimate omega_t using robust algorithm, with weights
-            try:
-                omega = solveRC(r, c, sigma=sigma_array[i], w=w)
-            except SingularMatrixError as e:
-                # singular matrix, just skip this ring
-                # expand on error message
-                raise SingularMatrixError("Singular matrix in the iteration {} wtsum {}".format(it+1,w.sum()))
-
-            # Stopping criteria: |omega_{t+1} - omega_{t}| < epsilon
-            diff = np.sqrt(((omega-omega_last)**2).sum())
-            if verbose:
-                print(f"{i} sigma {sigma_array[i]} diff {diff} wtsum {w.sum()}")
-            if diff < 1.e-11 and it>niter:
-                break
-                
-    return omega, w
-
 def robust_ring3(cat, ref, area, radius, sigma, minpairs=None, gamma=None, mid=True, **kw):
     """
     Estimate omega with robust algorithm in rings. 
     This uses adaptive ring widths based on the number of pairs per ring.
     After obtaining the estimated omega fron the optimal ring,
     final iterations are perfomed on all pairs within the research radius. 
-    Additional keywords are passed to process_ring2() and rob_est2.
+    Additional keywords are passed to process_ring2() and rob_est().
     
     :param cat:           Input catalog dataframe with (x,y,z) coordinates.
     :param ref:           Reference catalog dataframe with (x,y,z) coordinates.
@@ -453,7 +371,7 @@ def robust_ring3(cat, ref, area, radius, sigma, minpairs=None, gamma=None, mid=T
    
     # estimate final omega using robust algorithm
     try:
-        omega, w = rob_est2(r, c, sigma, gamma=gamma, area=area, omega=bestomega, **kw)
+        omega, w = rob_est(r, c, sigma, gamma=gamma, area=area, omega=bestomega, **kw)
     except SingularMatrixError as e:
         if printerror:
             print(e)
