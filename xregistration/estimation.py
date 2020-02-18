@@ -283,7 +283,7 @@ def rob_est2(r, c, sigma, gamma, area, omega=None, w=None, sigma_init=None, nite
     # use w=1 if too few pairs
     n = r.shape[0]
     if n < 3:
-        if printerror is True:
+        if printerror:
             print(f"Skipping the weighting with {n} pairs")
         # estimate with weights of all ones
         omega = solveRC(r, c, sigma=sigma, w=None)
@@ -365,7 +365,7 @@ def rob_est(r, c, sigma, gamma, area, sigma_init=None, niter=10, nextr=100, prin
     # use w=1 if too few pairs
     n = r.shape[0]
     if n < 3:
-        if printerror is True:
+        if printerror:
             print(f"Skipping the weighting with {n} pairs")
         # estimate with weights of all ones
         omega = solveRC(r, c, sigma=sigma, w=None)
@@ -455,7 +455,7 @@ def robust_ring3(cat, ref, area, radius, sigma, minpairs=None, gamma=None, mid=T
     try:
         omega, w = rob_est2(r, c, sigma, gamma=gamma, area=area, omega=bestomega, **kw)
     except SingularMatrixError as e:
-        if printerror is True:
+        if printerror:
             print(e)
 
     return omega, pairs, w
@@ -702,7 +702,7 @@ def process_ring2(cat, ref, pairs, ringpairs, area, radius, sigma, sigma_init=No
                     printerror=printerror, verbose=printprogress>1)
             
         except SingularMatrixError as e:
-            if printerror is True:
+            if printerror:
                 print(e)
                 print('continuing to next ring')
             continue
@@ -772,6 +772,7 @@ def process_ring(cat, ref, pairs, ringpairs, area, radius, sigma, sigma_init=Non
     
     # Initial best sum(weight)=0
     bestwtsum = 0.0
+    bestomega = None
     bestring = nrings
     
     if printprogress:
@@ -798,7 +799,7 @@ def process_ring(cat, ref, pairs, ringpairs, area, radius, sigma, sigma_init=Non
                     printerror=printerror, verbose=printprogress>1)
             
         except SingularMatrixError as e:
-            if printerror is True:
+            if printerror:
                 print(e)
                 print('continuing to next ring')
             continue
@@ -815,4 +816,9 @@ def process_ring(cat, ref, pairs, ringpairs, area, radius, sigma, sigma_init=Non
             loop.set_description("Computing...".format(iring))
             loop.update(1)
     loop.close()
+    if bestomega is None:
+        if printerror:
+            print("process_ring: no solution found")
+        return np.zeros(3), np.zeros((0,2),dtype=int), np.zeros(0,dtype=float)
     return bestomega, bestpairs, bestwt
+
