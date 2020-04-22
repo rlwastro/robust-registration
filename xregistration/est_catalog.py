@@ -97,6 +97,9 @@ def gaiaquery(ramin, decmin, ramax, decmax, version='dr2',
             tab.rename_column(col,lcol)
     return tab
 
+# global cache to speed repeated calls for info on data
+hlacache = {}
+
 def gethlainfo(dataset, url="http://hla.stsci.edu/cgi-bin/hlaSIAP.cgi", params=None):
     """Get info on the observation from the HLA SIAP server.
     
@@ -112,8 +115,6 @@ def gethlainfo(dataset, url="http://hla.stsci.edu/cgi-bin/hlaSIAP.cgi", params=N
     :type params:      dict
     :returns:          astropy.Table: image table with (x,y) & (ra, dec) coordinates, magnitudes etc.
     """
-    
-    hlacache = {}
     
     totalname = dsname2total(dataset)
     try:
