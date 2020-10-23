@@ -137,6 +137,9 @@ def getpairs(cat, ref, sep):
         raise ValueError("xyz1 and xyz2 parameters must be 2-D [*,3] arrays")
     n1 = xyz1.shape[0]
     n2 = xyz2.shape[0]
+    if n1==0 or n2==0:
+        # no sources in catalog, return empty pointer array
+        return np.empty((0,2),dtype=int)
 
     # pick the coordinate with the largest range for initial sort
     range1 = xyz1.max(axis=0)-xyz1.min(axis=0)
@@ -443,7 +446,14 @@ def process_ring(cat, ref, pairs, ringpairs, area, radius, sigma, sigma_init=Non
         print(f"Split {pairs.shape[0]} pairs into {nrings} overlapping rings")
         print(f"process_ring: sigma {sigma} sigma_init {sigma_init}")
 
-    gamma = gamma or min(cat.shape[0],ref.shape[0]) / pairs.shape[0]
+    # gamma = gamma or min(cat.shape[0],ref.shape[0]) / pairs.shape[0]
+    if not gamma:
+        # count just sources actually included in pairs
+        # this makes a difference when search radius is small and many sources don't match
+        n1 = (np.bincount(pairs[:,0])!=0).sum()
+        n2 = (np.bincount(pairs[:,1])!=0).sum()
+        gamma = min(n1,n2) / pairs.shape[0]
+
     # increase gamma because expected match is higher in the correct ring
     #gfac = pairs.shape[0] / np.mean([x.shape[0] for x in ringpairs])
     #gamma = gamma * gfac
@@ -492,7 +502,7 @@ def process_ring(cat, ref, pairs, ringpairs, area, radius, sigma, sigma_init=Non
             bestomega = omega
             bestwtsum = wtsum
             bestwt = w
-        if printerror is False:
+        if not printerror:
             loop.set_description("Computing...".format(iring))
             loop.update(1)
     loop.close()
@@ -501,4 +511,3 @@ def process_ring(cat, ref, pairs, ringpairs, area, radius, sigma, sigma_init=Non
             print("process_ring: no solution found")
         return np.zeros(3), np.zeros((0,2),dtype=int), np.zeros(0,dtype=float)
     return bestomega, bestpairs, bestwt
-
