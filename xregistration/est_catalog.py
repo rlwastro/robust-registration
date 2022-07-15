@@ -1,3 +1,10 @@
+"""Utility functions
+
+This module includes functions to read HLA and Gaia catalogs plus
+some useful utility functions for converting between RA, Dec spherical
+coordinates and 3-D Cartesian xyz coordinates.
+"""
+
 import numpy as np
 
 from astropy.io import ascii, votable

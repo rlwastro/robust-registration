@@ -1,4 +1,10 @@
-# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4 ai :
+"""Robust cross-matching with astrometric correction
+
+The main function is robust_ring(), which cross-matches two catalogs using
+the robust Bayesian algorithm and returns information on matched sources
+plus the infinitesimal rotation vector omega that shifts and rotates the
+astrometry.
+"""
 
 import numpy as np
 import pandas as pd
