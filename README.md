@@ -10,6 +10,12 @@ exist in both catalogs.  This version of the algorithm implements the "ring" alg
 
 The Jupyter notebook demonstrates using the robust registration algorithm to cross-match catalogs with rotation and shift.  The first part of this notebook tests the algorithm on simulated HST/ACS/WFC catalogs. The second part demonstrates the cross-registration of a real HST image with a large shift (from the HLA catalog) to the Gaia DR2 catalog of the same field.  We also compare the robust estimation results with the results from the method of least-squares (Budavári & Lubow 2012).
 
+### Installation
+
+Install this code using pip:
+
+`pip install xregistration`
+
 ### References
 
 [Tian, F., Budavári, T., Basu, A., Lubow, S.H., & White, R.L. (2019) Robust Registration of Astronomy Catalogs with Applications to the Hubble Space Telescope. _The Astronomical Journal_ 158, 191. doi:10.3847/1538-3881/ab3f38](https://ui.adsabs.harvard.edu/abs/2019AJ....158..191T).
