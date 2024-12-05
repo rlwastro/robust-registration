@@ -179,7 +179,7 @@ def getpairs(cat, ref, sep):
         dsepsq = np.square(xyz2[klo:khi,:]-xyz1[i]).sum(axis=-1)
         w = (dsepsq <= sepsq).nonzero()[0]
         if w.size > 0:
-            p1.append(np.zeros(w.size,dtype=np.int)+i)
+            p1.append(np.zeros(w.size,dtype=int)+i)
             p2.append(klo+w)
     if p1:
         return np.vstack([is1[np.hstack(p1)], is2[np.hstack(p2)]]).T

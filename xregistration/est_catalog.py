@@ -204,7 +204,7 @@ def radec2xyz(ra,dec):
         n = ndec
     elif ndec != nra and ndec != 1:
         raise ValueError("Mismatched array lengths for ra [{}], dec [{}]".format(nra,ndec))
-    cxyz = np.zeros((n,3),dtype=np.float)
+    cxyz = np.zeros((n,3),dtype=float)
     rarad = d2r*ra
     decrad = d2r*dec
     cdec = np.cos(decrad)
